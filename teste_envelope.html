@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste Envelope Layout 1</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+form { margin-bottom: 20px; }
+label { display: inline-block; width: 100px; font-weight: bold; }
+input { margin-bottom: 10px; padding: 5px; width: 200px; }
+button { margin: 10px 5px; padding: 10px 20px; font-weight: bold; cursor: pointer; }
+.envelope {
+  width: 660px; height: 330px; background: white; border: 3px solid #000;
+  position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.3); padding: 20px; box-sizing: border-box;
+}
+.logo { position: absolute; top: 15px; left: 20px; width: 50px; height: 30px; background: #cc0000;
+  display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; }
+.header-right { position: absolute; top: 15px; right: 20px; text-align: right; font-size: 9px; }
+.header-right h3 { margin: 0; font-size: 14px; }
+.titulo { text-align: center; margin-top: 35px; font-size: 12px; font-weight: bold; }
+.separator { border-top: 2px solid #000; margin: 8px 0; }
+.secao { font-size: 9px; font-weight: bold; margin: 8px 0 5px 0; }
+.dados { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 7px; }
+.campo { display: flex; }
+.label { font-weight: bold; margin-right: 5px; min-width: 60px; }
+</style>
+</head>
+<body>
+
+<h2>Formulário de Teste</h2>
+<form id="formDados">
+  <label>Marca:</label><input name="marca" value="Chevrolet"><br>
+  <label>Modelo:</label><input name="modelo" value="Sonic Sedan LX"><br>
+  <label>Ano:</label><input name="ano" value="2012"><br>
+  <label>Placa:</label><input name="placa" value="JKE-6E14"><br>
+  <label>Cor:</label><input name="cor" value="Cinza"><br>
+  <label>Combustível:</label><input name="combustivel" value="Flex"><br>
+  <label>RENAVAM:</label><input name="renavam" value="00479550140"><br>
+  <label>Câmbio:</label><input name="cambio" value="Automático"><br>
+  <label>Estoque:</label><input name="estoque" value="001"><br>
+  <label>Km:</label><input name="km" value="85.000 km"><br>
+  <label>Entrada:</label><input name="entrada" value="01/04/2026"><br>
+  <label>Saída:</label><input name="saida" value="__/__/____"><br>
+  <label>Vendedor:</label><input name="vendedor" value="João Silva"><br>
+  <label>Proprietário:</label><input name="proprietario" value="Maria Santos"><br>
+  <label>Fornecedor:</label><input name="fornecedor" value="Auto Peças XYZ"><br>
+  <label>Comprador:</label><input name="comprador" value="_______________"><br>
+  <button type="button" onclick="preencherEnvelope()">Preencher Envelope</button>
+  <button type="button" onclick="gerarPDF()">Gerar PDF</button>
+</form>
+
+<div id="envelope" class="envelope">
+  <div class="logo">FIAT</div>
+  <div class="header-right">
+    <h3>e-GARAGE MOTORS</h3>
+    <p>Fone: (62) 99825-7645 | Goiânia-GO</p>
+  </div>
+  <div class="titulo">[Título do Veículo]</div>
+  <div class="separator"></div>
+  <div class="secao">DADOS DO VEÍCULO</div>
+  <div class="dados" id="dadosVeiculo"></div>
+  <div class="separator"></div>
+  <div class="dados" id="dadosExtra"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+function preencherEnvelope() {
+  const dados = Object.fromEntries(new FormData(document.getElementById('formDados')));
+  document.querySelector('#envelope .titulo').innerText = dados.marca + " " + dados.modelo;
+  document.getElementById('dadosVeiculo').innerHTML = `
+    <div class="campo"><span class="label">Marca:</span> ${dados.marca}</div>
+    <div class="campo"><span class="label">Modelo:</span> ${dados.modelo}</div>
+    <div class="campo"><span class="label">Ano:</span> ${dados.ano}</div>
+    <div class="campo"><span class="label">Placa:</span> ${dados.placa}</div>
+    <div class="campo"><span class="label">Cor:</span> ${dados.cor}</div>
+    <div class="campo"><span class="label">Combustível:</span> ${dados.combustivel}</div>
+    <div class="campo"><span class="label">RENAVAM:</span> ${dados.renavam}</div>
+    <div class="campo"><span class="label">Câmbio:</span> ${dados.cambio}</div>
+    <div class="campo"><span class="label">Nº Estoque:</span> ${dados.estoque}</div>
+    <div class="campo"><span class="label">Km:</span> ${dados.km}</div>`;
+  document.getElementById('dadosExtra').innerHTML = `
+    <div class="campo"><span class="label">Dt.Entrada:</span> ${dados.entrada}</div>
+    <div class="campo"><span class="label">Dt.Saída:</span> ${dados.saida}</div>
+    <div class="campo"><span class="label">Vendedor:</span> ${dados.vendedor}</div>
+    <div class="campo"><span class="label">Proprietário:</span> ${dados.proprietario}</div>
+    <div class="campo"><span class="label">Fornecedor:</span> ${dados.fornecedor}</div>
+    <div class="campo"><span class="label">Comprador:</span> ${dados.comprador}</div>`;
+}
+function gerarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: "landscape", unit: "px", format: [660, 330] });
+  doc.html(document.querySelector("#envelope"), {
+    callback: function (doc) { doc.save("envelope_layout1.pdf"); }
+  });
+}
+</script>
+
+</body>
+</html>
